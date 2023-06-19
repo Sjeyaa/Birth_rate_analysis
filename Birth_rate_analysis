@@ -1,0 +1,134 @@
+import pandas as pd
+df=pd.read_csv("https://raw.githubusercontent.com/amankharwal/Birthrate-Analysis/master/births.csv")
+print(df)
+
+df.info()
+
+print(df.describe())
+
+d=df[df.duplicated()]
+print("Duplicate entries:")
+print(d)
+
+print("Mean=\n",df.mean())
+print("Median=\n",df.median())
+print("Variance=\n",df.var())
+print("Standard deviation=\n",df.std())
+print("Maximum value=\n",df.max())
+print("Minimum value=\n",df.min())
+
+print("Interquartile=",df.quantile())
+
+
+x=df.aggregate(["sum"])
+print(x)
+y=df.aggregate(["max"])
+print(y)
+z=df.aggregate(["mean"])
+print(z)
+s=df.aggregate(["sem"])
+print(s)
+p=df.aggregate(["var"])
+print(p)
+q=df.aggregate(["prod"])
+print(q)
+
+
+from sklearn.model_selection import train_test_split
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn import datasets,linear_model
+from sklearn.metrics import mean_squared_error,r2_score,mean_absolute_error
+X=df['year']
+Y=df['births']
+X=X.values.reshape(-1,1)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size = 0.7, test_size = 0.3, random_state = 100)
+print(X.shape)
+print(Y.shape)
+print(X_train.shape)
+print(X_test.shape)
+print(Y_train.shape)
+print(Y_test.shape)
+
+regr=linear_model.LinearRegression()
+regr.fit(X_train,Y_train)
+
+print(regr.coef_)
+print(regr.intercept_)
+
+y_pred = regr.predict(X_test)
+res = (Y_test - y_pred)
+# Checking the R-squared value
+rsquared = r2_score(Y_test, y_pred)
+
+#MEAN SQUARE ERROR
+print('Mean squared error: %.2f'% mean_squared_error(Y_test, y_pred))
+#MEAN ABSOLUTE ERROR
+print('Mean Absolute Error: %.2f'% mean_absolute_error(Y_test, y_pred))
+
+
+plt.scatter(X_train, Y_train)
+plt.plot(X_train, -4288730+ 2171*X_train, 'r')
+plt.show()
+
+
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+sns.set() 
+birth_decade = df.pivot_table('births', index='decade', columns='gender', aggfunc='sum') 
+birth_decade.plot() 
+plt.ylabel("Total births per year") 
+plt.show()
+
+
+import numpy as np
+quartiles = np.percentile(df['births'], [25, 50, 75])
+mu = quartiles[1]
+sig = 0.74 * (quartiles[2] - quartiles[0])
+print(sig)
+
+births = df.query('(births > @mu - 5 * @sig) & (births < @mu + 5 * @sig)')
+births['day'] = births['day'].astype(int)
+births.index = pd.to_datetime(10000 * births.year +
+                              100 * births.month +
+                              births.day, format='%Y%m%d')
+
+births['dayofweek'] = births.index.dayofweek
+
+
+births.pivot_table('births', index='dayofweek',
+                    columns='decade', aggfunc='mean').plot()
+plt.gca().set_xticklabels(['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'])
+plt.ylabel('mean births by day');
+plt.show()
+
+births_month = births.pivot_table('births', [births.index.month, births.index.day])
+print(births_month.head())
+
+births_month.index = [pd.datetime(2012, month, day)
+                      for (month, day) in births_month.index]
+print(births_month.head())
+
+fig, ax = plt.subplots(figsize=(12, 4))
+births_month.plot(ax=ax)
+plt.show()
+
+
+import pandas as pd
+df1=pd.read_csv("crude-birth-rate.csv")
+print(df1)
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+data = {'C':20, 'C++':15, 'Java':30,'Python':35}
+courses = list(data.keys())
+values = list(data.values())
+fig = plt.figure(figsize = (10, 5))
+plt.bar(courses, values, color ='red',width = 0.4)
+plt.xlabel("Courses offered")
+plt.ylabel("No. of students enrolled")
+plt.title("Students enrolled in different courses")
+plt.show()
